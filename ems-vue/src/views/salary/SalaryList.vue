@@ -5,10 +5,10 @@
     </template>
     <div class="toolbar">
       <div class="toolbar-left">
-        <el-input v-model="filters.empName" placeholder="搜索员工姓名" clearable class="search-input" @clear="load">
+        <el-input v-model="searchKeyword" placeholder="搜索员工姓名" clearable class="search-input" @clear="load">
           <template #prefix><el-icon><Search /></el-icon></template>
         </el-input>
-        <el-select v-model="filters.month" placeholder="选择月份" class="search-select" @change="load">
+        <el-select v-model="filters.salary_year_month" placeholder="选择月份" class="search-select" @change="load">
           <el-option v-for="m in 12" :key="m" :label="m+'月'" :value="m" />
         </el-select>
         <el-button type="primary" @click="load" class="search-btn"><el-icon><Search /></el-icon>查询</el-button>
@@ -71,8 +71,9 @@ import { ref, onMounted } from 'vue'
 import { salaryPaged, salarySave, salaryDelete, salaryGetById, salaryBatchPay } from '../../api/salary'
 import { ElMessage } from 'element-plus'
 
-const filters = ref({ empName: '', month: null })
+const filters = ref({ salary_year_month: null })
 const page = ref({ pageIndex: 1, pageSize: 10 })
+const searchKeyword = ref('')
 const list = ref([])
 const total = ref(0)
 const selected = ref([])
