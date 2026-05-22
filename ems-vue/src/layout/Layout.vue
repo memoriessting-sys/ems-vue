@@ -8,16 +8,10 @@
         <span v-if="!isCollapse" class="logo-text">企业管理系统</span>
       </div>
       <el-menu :default-active="$route.path" router :collapse="isCollapse" class="aside-menu">
-        <el-menu-item index="/home"><el-icon><HomeFilled /></el-icon><span>首页概览</span></el-menu-item>
-        <el-menu-item index="/emp"><el-icon><User /></el-icon><span>员工管理</span></el-menu-item>
-        <el-menu-item index="/dept"><el-icon><OfficeBuilding /></el-icon><span>部门管理</span></el-menu-item>
-        <el-menu-item index="/dict"><el-icon><Collection /></el-icon><span>字典管理</span></el-menu-item>
-        <el-menu-item index="/postLevel"><el-icon><Trophy /></el-icon><span>岗位等级</span></el-menu-item>
-        <el-menu-item index="/attendance"><el-icon><Clock /></el-icon><span>考勤管理</span></el-menu-item>
-        <el-menu-item index="/salary"><el-icon><Money /></el-icon><span>薪资管理</span></el-menu-item>
-        <el-menu-item index="/leave"><el-icon><Document /></el-icon><span>请假管理</span></el-menu-item>
-        <el-menu-item index="/chart"><el-icon><DataAnalysis /></el-icon><span>数据统计</span></el-menu-item>
-        <el-menu-item v-if="isAdmin" index="/user"><el-icon><Setting /></el-icon><span>用户管理</span></el-menu-item>
+        <el-menu-item v-for="route in menuRoutes" :key="route.path" :index="'/' + route.path">
+          <el-icon><component :is="route.meta.icon" /></el-icon>
+          <span>{{ route.meta.title }}</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
     <el-container class="layout-main">
@@ -57,21 +51,21 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useUserStore } from '../store/user'
+import { usePermissionStore } from '../store/permission'
 import { useRouter, useRoute } from 'vue-router'
 
 const isCollapse = ref(false)
 const store = useUserStore()
+const permissionStore = usePermissionStore()
 const router = useRouter()
 const route = useRoute()
 const user = computed(() => store.user)
-const isAdmin = computed(() => store.user?.roleType === 3)
+const menuRoutes = computed(() => permissionStore.routes[0]?.children || [])
 
-const titleMap = {
-  '/home': '首页概览', '/emp': '员工管理', '/dept': '部门管理',
-  '/dict': '字典管理', '/postLevel': '岗位等级', '/attendance': '考勤管理',
-  '/salary': '薪资管理', '/leave': '请假管理', '/chart': '数据统计', '/user': '用户管理'
-}
-const currentPageTitle = computed(() => titleMap[route.path] || '企业管理系统')
+const currentPageTitle = computed(() => {
+  const matched = menuRoutes.value.find(r => '/' + r.path === route.path)
+  return matched?.meta?.title || '企业管理系统'
+})
 
 async function handleCommand(cmd) {
   if (cmd === 'logout') {
