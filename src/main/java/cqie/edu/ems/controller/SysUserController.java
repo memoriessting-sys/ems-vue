@@ -4,12 +4,16 @@ import cqie.edu.ems.common.Result;
 import cqie.edu.ems.comm.PageQo;
 import cqie.edu.ems.domain.entity.SysUser;
 import cqie.edu.ems.domain.qo.SysUserQo;
+import cqie.edu.ems.domain.vo.LoginVo;
 import cqie.edu.ems.domain.vo.SysUserVo;
 import cqie.edu.ems.service.SysUserService;
+import cqie.edu.ems.util.JwtUtil;
 import com.github.pagehelper.PageInfo;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
@@ -18,26 +22,82 @@ public class SysUserController {
     @Autowired
     private SysUserService sysUserService;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    private static final List<String> ADMIN_PERMISSIONS = List.of(
+            "home", "emp:list", "emp:add", "emp:edit", "emp:delete",
+            "dept:list", "dept:add", "dept:edit", "dept:delete",
+            "dict:list", "dict:add", "dict:edit", "dict:delete",
+            "postLevel:list", "postLevel:add", "postLevel:edit", "postLevel:delete",
+            "attendance:list", "attendance:edit",
+            "salary:list", "salary:add", "salary:edit", "salary:pay",
+            "leave:list", "leave:add", "leave:approve", "leave:return",
+            "chart:view",
+            "user:list", "user:add", "user:edit", "user:delete", "user:resetPwd"
+    );
+
+    private static final List<String> MANAGER_PERMISSIONS = List.of(
+            "home", "emp:list", "emp:add", "emp:edit",
+            "dept:list",
+            "postLevel:list",
+            "attendance:list", "attendance:edit",
+            "salary:list", "salary:add", "salary:edit", "salary:pay",
+            "leave:list", "leave:add", "leave:approve", "leave:return",
+            "chart:view"
+    );
+
+    private static final List<String> EMPLOYEE_PERMISSIONS = List.of(
+            "home",
+            "attendance:list",
+            "salary:list",
+            "leave:list", "leave:add"
+    );
+
+    private List<String> getPermissions(Integer roleType) {
+        return switch (roleType) {
+            case 3 -> ADMIN_PERMISSIONS;
+            case 2 -> MANAGER_PERMISSIONS;
+            default -> EMPLOYEE_PERMISSIONS;
+        };
+    }
+
     @PostMapping("/login")
-    public Result<SysUser> login(@RequestBody SysUser user, HttpSession session) {
+    public Result<LoginVo> login(@RequestBody SysUser user) {
         SysUser loginUser = sysUserService.checkLogin(user.getAccount(), user.getPassword());
         if (loginUser == null) return Result.error("账号或密码错误");
         if (loginUser.getStatus() != 0) return Result.error("该账号被禁用");
-        session.setAttribute("loginUser", loginUser);
-        return Result.success(loginUser);
-    }
 
-    @PostMapping("/logout")
-    public Result<Void> logout(HttpSession session) {
-        session.invalidate();
-        return Result.success(null);
+        String token = jwtUtil.generateToken(loginUser.getId(), loginUser.getAccount(), loginUser.getName(), loginUser.getRoleType());
+        LoginVo vo = new LoginVo();
+        vo.setToken(token);
+        vo.setUserId(loginUser.getId());
+        vo.setAccount(loginUser.getAccount());
+        vo.setName(loginUser.getName());
+        vo.setRoleType(loginUser.getRoleType());
+        vo.setPermissions(getPermissions(loginUser.getRoleType()));
+        return Result.success(vo);
     }
 
     @GetMapping("/info")
-    public Result<SysUser> info(HttpSession session) {
-        SysUser user = (SysUser) session.getAttribute("loginUser");
-        if (user == null) return Result.error("未登录");
-        return Result.success(user);
+    public Result<LoginVo> info(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        Integer roleType = (Integer) request.getAttribute("roleType");
+        String account = (String) request.getAttribute("account");
+        String name = (String) request.getAttribute("userName");
+
+        LoginVo vo = new LoginVo();
+        vo.setUserId(userId);
+        vo.setAccount(account);
+        vo.setName(name);
+        vo.setRoleType(roleType);
+        vo.setPermissions(getPermissions(roleType));
+        return Result.success(vo);
+    }
+
+    @PostMapping("/logout")
+    public Result<Void> logout() {
+        return Result.success(null);
     }
 
     @PostMapping("/register")
