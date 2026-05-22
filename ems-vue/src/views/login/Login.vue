@@ -55,14 +55,15 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '../../store/user'
-import { login, register } from '../../api/user'
+import { register } from '../../api/user'
 import { User, UserFilled, Lock, OfficeBuilding } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 
 const mode = ref('login')
 const router = useRouter()
+const route = useRoute()
 const store = useUserStore()
 
 // 登录
@@ -73,14 +74,12 @@ async function handleLogin() {
   if (!loginForm.value.account || !loginForm.value.password) return ElMessage.warning('请输入账号和密码')
   loginLoading.value = true
   try {
-    const res = await login(loginForm.value)
-    if (res.code === 200) {
-      store.setUser(res.data)
-      ElMessage.success('登录成功')
-      router.push('/home')
-    } else {
-      ElMessage.error(res.msg || '登录失败')
-    }
+    await store.login(loginForm.value)
+    ElMessage.success('登录成功')
+    const redirect = route.query.redirect || '/'
+    router.push(redirect)
+  } catch (e) {
+    // Error already handled by request interceptor
   } finally {
     loginLoading.value = false
   }
