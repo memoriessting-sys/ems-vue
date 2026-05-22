@@ -59,7 +59,7 @@ onMounted(async () => {
       tooltip: { trigger: 'item', formatter: '{b}: {c}人 ({d}%)' },
       series: [{
         type: 'pie', radius: ['35%', '65%'], center: ['50%', '50%'],
-        data: dist.data.map(i => ({ name: i.deptName, value: i.count })),
+        data: dist.data.map(i => ({ name: i.deptName, value: i.employeeCount })),
         label: { formatter: '{b}\n{c}人', fontSize: 12 },
         itemStyle: { borderRadius: 6, borderColor: '#fff', borderWidth: 2 },
         emphasis: { itemStyle: { shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.2)' } }
@@ -77,7 +77,7 @@ onMounted(async () => {
       yAxis: { type: 'value', splitLine: { lineStyle: { color: '#eee' } } },
       series: [{
         name: '出勤人数', type: 'line', smooth: true,
-        data: trend.data.map(i => i.count),
+        data: trend.data.map(i => i.totalCount),
         lineStyle: { width: 3, color: '#409eff' },
         areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(64,158,255,0.3)' }, { offset: 1, color: 'rgba(64,158,255,0.05)' }]) },
         itemStyle: { color: '#409eff', borderWidth: 2, borderColor: '#fff' },

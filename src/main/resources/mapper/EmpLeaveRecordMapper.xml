@@ -135,8 +135,11 @@
     </select>
 
     <select id="selectList" resultType="cqie.edu.ems.domain.vo.EmpLeaveRecordVo">
-        SELECT 
-            lr.*,
+        SELECT
+            lr.id, lr.user_id, lr.create_time as createTime, lr.leave_start_time as leaveStartTime,
+            lr.leave_end_time as leaveEndTime, lr.leave_reason as leaveReason, lr.leave_type_code as leaveTypeCode,
+            lr.approve_user_id, lr.approve_time as approveTime, lr.approve_content as approveContent,
+            lr.status, lr.real_end_time as realEndTime,
             COALESCE(e1.name, u1.name) as userName,
             COALESCE(e2.name, u2.name) as approveUserName,
             d.dict_item_value as leaveTypeName,

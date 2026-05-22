@@ -7,8 +7,8 @@ import lombok.ToString;
 @Data
 @ToString(callSuper = true)
 public class EmpLeaveRecordVo extends EmpLeaveRecord {
-    private String user_name;
-    private String approve_user_name;
-    private String leave_type_name;
-    private String status_name;
+    private String userName;
+    private String approveUserName;
+    private String leaveTypeName;
+    private String statusName;
 }

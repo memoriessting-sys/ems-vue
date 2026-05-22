@@ -12,9 +12,9 @@
           <el-option label="婚假" value="4" />
         </el-select>
         <el-select v-model="filters.status" placeholder="选择状态" clearable class="search-select" @change="load">
-          <el-option label="待审批" :value="0" />
-          <el-option label="已批准" :value="1" />
-          <el-option label="已驳回" :value="2" />
+          <el-option label="待审批" :value="1" />
+          <el-option label="已批准" :value="2" />
+          <el-option label="已驳回" :value="3" />
         </el-select>
         <el-button type="primary" @click="load" class="search-btn"><el-icon><Search /></el-icon>查询</el-button>
       </div>
@@ -22,26 +22,28 @@
     </div>
     <el-table :data="list" border stripe class="data-table" :header-cell-style="{background:'#f5f7fa',color:'#606266'}">
       <el-table-column prop="id" label="ID" width="70" align="center" />
-      <el-table-column prop="emp_name" label="员工" width="100" />
-      <el-table-column prop="leave_type_name" label="请假类型" width="100" align="center">
+      <el-table-column prop="userName" label="员工" width="100" />
+      <el-table-column prop="leaveTypeName" label="请假类型" width="100" align="center">
         <template #default="{ row }">
-          <el-tag size="small" effect="plain">{{ row.leave_type_name }}</el-tag>
+          <el-tag size="small" effect="plain">{{ row.leaveTypeName }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="leaveStartTime" label="开始日期" width="120" />
       <el-table-column prop="leaveEndTime" label="结束日期" width="120" />
-      <el-table-column prop="leave_days" label="天数" width="70" align="center" />
-      <el-table-column prop="leave_reason" label="原因" min-width="150" />
-      <el-table-column prop="status_name" label="状态" width="80" align="center">
+      <el-table-column label="天数" width="70" align="center">
+        <template #default="{ row }">{{ calcDays(row.leaveStartTime, row.leaveEndTime) }}</template>
+      </el-table-column>
+      <el-table-column prop="leaveReason" label="原因" min-width="150" />
+      <el-table-column prop="statusName" label="状态" width="80" align="center">
         <template #default="{ row }">
-          <el-tag :type="leaveStateType(row.state)" size="small" effect="light">{{ row.stateName }}</el-tag>
+          <el-tag :type="leaveStateType(row.status)" size="small" effect="light">{{ row.statusName }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="220" fixed="right" align="center">
         <template #default="{ row }">
-          <el-button v-if="row.state === 0" link type="success" @click="handleApprove(row.id, 1)" class="op-btn"><el-icon><Check /></el-icon>批准</el-button>
-          <el-button v-if="row.state === 0" link type="danger" @click="handleApprove(row.id, 2)" class="op-btn"><el-icon><Close /></el-icon>驳回</el-button>
-          <el-button v-if="row.state === 1" link type="warning" @click="handleReturn(row.id)" class="op-btn"><el-icon><RefreshRight /></el-icon>销假</el-button>
+          <el-button v-if="row.status === 1" link type="success" @click="handleApprove(row.id, 2)" class="op-btn"><el-icon><Check /></el-icon>批准</el-button>
+          <el-button v-if="row.status === 1" link type="danger" @click="handleApprove(row.id, 3)" class="op-btn"><el-icon><Close /></el-icon>驳回</el-button>
+          <el-button v-if="row.status === 2" link type="warning" @click="handleReturn(row.id)" class="op-btn"><el-icon><RefreshRight /></el-icon>销假</el-button>
           <el-popconfirm title="确认删除?" @confirm="handleDelete(row.id)">
             <template #reference><el-button link type="danger" class="op-btn"><el-icon><Delete /></el-icon>删除</el-button></template>
           </el-popconfirm>
@@ -76,10 +78,17 @@ const total = ref(0)
 const dialogVisible = ref(false)
 const form = ref({})
 
-function leaveStateType(state) {
-  if (state === 1) return 'success'
-  if (state === 2) return 'danger'
+function leaveStateType(status) {
+  if (status === 2) return 'success'
+  if (status === 3) return 'danger'
+  if (status === 9) return 'info'
   return 'warning'
+}
+
+function calcDays(start, end) {
+  if (!start || !end) return '-'
+  const ms = new Date(end) - new Date(start)
+  return ms > 0 ? Math.ceil(ms / 86400000) : '-'
 }
 
 onMounted(() => load())

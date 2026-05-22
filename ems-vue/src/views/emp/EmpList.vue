@@ -21,6 +21,7 @@
       <el-table-column prop="id" label="ID" width="70" align="center" />
       <el-table-column prop="name" label="姓名" width="100" />
       <el-table-column prop="code" label="工号" width="120" />
+      <el-table-column prop="idCard" label="证件号" width="180" />
       <el-table-column prop="deptName" label="部门" width="120" />
       <el-table-column prop="postLevelName" label="岗位等级" width="120" />
       <el-table-column prop="mobile" label="电话" width="130" />
@@ -39,6 +40,7 @@
       <el-form :model="form" label-width="80px" class="dialog-form">
         <el-form-item label="姓名"><el-input v-model="form.name" placeholder="请输入姓名" /></el-form-item>
         <el-form-item label="工号"><el-input v-model="form.code" placeholder="请输入工号" /></el-form-item>
+        <el-form-item label="证件号"><el-input v-model="form.idCard" placeholder="请输入证件号" /></el-form-item>
         <el-form-item label="部门"><el-select v-model="form.deptId" placeholder="请选择部门" style="width:100%"><el-option v-for="d in depts" :key="d.id" :label="d.name" :value="d.id" /></el-select></el-form-item>
         <el-form-item label="岗位等级"><el-select v-model="form.postLevelId" placeholder="请选择岗位等级" style="width:100%"><el-option v-for="p in postLevels" :key="p.id" :label="p.name" :value="p.id" /></el-select></el-form-item>
         <el-form-item label="电话"><el-input v-model="form.mobile" placeholder="请输入电话" /></el-form-item>

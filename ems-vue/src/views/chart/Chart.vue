@@ -99,7 +99,7 @@ onMounted(async () => {
       xAxis: { type: 'category', data: dist.data.map(i => i.deptName), axisLine: { lineStyle: { color: '#ddd' } } },
       yAxis: { type: 'value', splitLine: { lineStyle: { color: '#eee' } } },
       series: [{
-        name: '人数', type: 'bar', data: dist.data.map(i => i.count),
+        name: '人数', type: 'bar', data: dist.data.map(i => i.employeeCount),
         itemStyle: { borderRadius: [4, 4, 0, 0], color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#67c23a' }, { offset: 1, color: '#b3e19d' }]) },
         barWidth: '40%'
       }]
@@ -116,7 +116,7 @@ onMounted(async () => {
       yAxis: { type: 'value', splitLine: { lineStyle: { color: '#eee' } } },
       series: [{
         name: '出勤人数', type: 'line', smooth: true,
-        data: trend.data.map(i => i.count),
+        data: trend.data.map(i => i.totalCount),
         lineStyle: { width: 3, color: '#409eff' },
         areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(64,158,255,0.3)' }, { offset: 1, color: 'rgba(64,158,255,0.05)' }]) },
         itemStyle: { color: '#409eff' },
