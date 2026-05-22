@@ -50,3 +50,7 @@ pagehelper:
 logging:
   level:
     cqie.edu.ems: debug
+
+jwt:
+  secret: ems-jwt-secret-key-2024-must-be-at-least-256-bits-long-for-hs256
+  expiration: 7200000
