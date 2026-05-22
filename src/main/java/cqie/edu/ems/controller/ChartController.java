@@ -1,9 +1,8 @@
 package cqie.edu.ems.controller;
 
 import cqie.edu.ems.common.Result;
-import cqie.edu.ems.domain.entity.SysUser;
 import cqie.edu.ems.service.*;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,12 +46,11 @@ public class ChartController {
     }
 
     @GetMapping("/salaryStats")
-    public Result<Map<String, Object>> salaryStats(HttpSession session) {
-        SysUser user = (SysUser) session.getAttribute("loginUser");
-        if (user == null) return Result.error("未登录");
+    public Result<Map<String, Object>> salaryStats(HttpServletRequest request) {
+        Integer roleType = (Integer) request.getAttribute("roleType");
         Map<String, Object> stats;
-        if (user.getRoleType() != 3) {
-            Long empId = salaryService.getEmpIdByUserId(user.getId());
+        if (roleType != 3) {
+            Long empId = salaryService.getEmpIdByUserId((Long) request.getAttribute("userId"));
             stats = empId != null ? salaryService.getStatisticsByEmpId(empId) : new HashMap<>();
         } else {
             stats = salaryService.getStatistics();

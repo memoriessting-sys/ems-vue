@@ -3,12 +3,11 @@ package cqie.edu.ems.controller;
 import cqie.edu.ems.common.Result;
 import cqie.edu.ems.comm.PageQo;
 import cqie.edu.ems.domain.entity.EmpSalary;
-import cqie.edu.ems.domain.entity.SysUser;
 import cqie.edu.ems.domain.qo.EmpSalaryQo;
 import cqie.edu.ems.domain.vo.EmpSalaryVo;
 import cqie.edu.ems.service.EmpSalaryService;
 import com.github.pagehelper.PageInfo;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,11 +24,10 @@ public class EmpSalaryController {
     private EmpSalaryService salaryService;
 
     @PostMapping("/paged")
-    public Result<PageInfo<EmpSalaryVo>> paged(@RequestBody PageQo<EmpSalaryQo> qo, HttpSession session) {
-        SysUser user = (SysUser) session.getAttribute("loginUser");
-        if (user == null) return Result.error("未登录");
-        if (user.getRoleType() != 3) {
-            Long empId = salaryService.getEmpIdByUserId(user.getId());
+    public Result<PageInfo<EmpSalaryVo>> paged(@RequestBody PageQo<EmpSalaryQo> qo, HttpServletRequest request) {
+        Integer roleType = (Integer) request.getAttribute("roleType");
+        if (roleType != 3) {
+            Long empId = salaryService.getEmpIdByUserId((Long) request.getAttribute("userId"));
             if (empId != null) qo.getFilters().setEmp_id(empId);
             else {
                 PageInfo<EmpSalaryVo> empty = new PageInfo<>();
@@ -59,12 +57,11 @@ public class EmpSalaryController {
     }
 
     @GetMapping("/statistics")
-    public Result<Map<String, Object>> statistics(HttpSession session) {
-        SysUser user = (SysUser) session.getAttribute("loginUser");
-        if (user == null) return Result.error("未登录");
+    public Result<Map<String, Object>> statistics(HttpServletRequest request) {
+        Integer roleType = (Integer) request.getAttribute("roleType");
         Map<String, Object> stats;
-        if (user.getRoleType() != 3) {
-            Long empId = salaryService.getEmpIdByUserId(user.getId());
+        if (roleType != 3) {
+            Long empId = salaryService.getEmpIdByUserId((Long) request.getAttribute("userId"));
             stats = empId != null ? salaryService.getStatisticsByEmpId(empId) : defaultStats();
         } else {
             stats = salaryService.getStatistics();

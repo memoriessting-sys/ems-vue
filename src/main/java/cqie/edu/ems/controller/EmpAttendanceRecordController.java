@@ -11,7 +11,7 @@ import cqie.edu.ems.mapper.SysDeptMapper;
 import cqie.edu.ems.mapper.SysUserMapper;
 import cqie.edu.ems.service.EmpAttendanceRecordService;
 import com.github.pagehelper.PageInfo;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,18 +54,14 @@ public class EmpAttendanceRecordController {
     }
 
     @PostMapping("/checkIn")
-    public Result<Void> checkIn(HttpSession session) {
-        SysUser user = (SysUser) session.getAttribute("loginUser");
-        if (user == null) return Result.error("请先登录");
-        attendanceService.checkIn(user.getId());
+    public Result<Void> checkIn(HttpServletRequest request) {
+        attendanceService.checkIn((Long) request.getAttribute("userId"));
         return Result.success(null);
     }
 
     @PostMapping("/checkOut")
-    public Result<Void> checkOut(HttpSession session) {
-        SysUser user = (SysUser) session.getAttribute("loginUser");
-        if (user == null) return Result.error("请先登录");
-        attendanceService.checkOut(user.getId());
+    public Result<Void> checkOut(HttpServletRequest request) {
+        attendanceService.checkOut((Long) request.getAttribute("userId"));
         return Result.success(null);
     }
 
