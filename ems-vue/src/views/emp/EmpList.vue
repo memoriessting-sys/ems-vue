@@ -23,7 +23,7 @@
       <el-table-column prop="code" label="工号" width="120" />
       <el-table-column prop="deptName" label="部门" width="120" />
       <el-table-column prop="postLevelName" label="岗位等级" width="120" />
-      <el-table-column prop="phone" label="电话" width="130" />
+      <el-table-column prop="mobile" label="电话" width="130" />
       <el-table-column prop="email" label="邮箱" min-width="160" />
       <el-table-column label="操作" width="150" fixed="right" align="center">
         <template #default="{ row }">
@@ -41,7 +41,7 @@
         <el-form-item label="工号"><el-input v-model="form.code" placeholder="请输入工号" /></el-form-item>
         <el-form-item label="部门"><el-select v-model="form.deptId" placeholder="请选择部门" style="width:100%"><el-option v-for="d in depts" :key="d.id" :label="d.name" :value="d.id" /></el-select></el-form-item>
         <el-form-item label="岗位等级"><el-select v-model="form.postLevelId" placeholder="请选择岗位等级" style="width:100%"><el-option v-for="p in postLevels" :key="p.id" :label="p.name" :value="p.id" /></el-select></el-form-item>
-        <el-form-item label="电话"><el-input v-model="form.phone" placeholder="请输入电话" /></el-form-item>
+        <el-form-item label="电话"><el-input v-model="form.mobile" placeholder="请输入电话" /></el-form-item>
         <el-form-item label="邮箱"><el-input v-model="form.email" placeholder="请输入邮箱" /></el-form-item>
       </el-form>
       <template #footer>
@@ -80,7 +80,7 @@ async function load() {
 }
 
 async function openDialog(row) {
-  form.value = row ? { ...await empGetById(row.id).then(r => r.data || row) } : { name: '', code: '', deptId: null, postLevelId: null, phone: '', email: '' }
+  form.value = row ? { ...await empGetById(row.id).then(r => r.data || row) } : { name: '', code: '', deptId: null, postLevelId: null, mobile: '', email: '' }
   dialogVisible.value = true
 }
 

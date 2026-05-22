@@ -15,10 +15,10 @@
     <el-table :data="list" border stripe class="data-table" :header-cell-style="{background:'#f5f7fa',color:'#606266'}">
       <el-table-column prop="id" label="ID" width="70" align="center" />
       <el-table-column prop="name" label="名称" />
-      <el-table-column prop="code" label="编码" />
-      <el-table-column prop="baseSalary" label="基础薪资" width="120" align="right">
+      <el-table-column prop="level" label="岗级" width="80" align="center" />
+      <el-table-column prop="salary" label="岗位薪资" width="120" align="right">
         <template #default="{ row }">
-          <span class="salary-text">{{ row.baseSalary?.toLocaleString() }}</span>
+          <span class="salary-text">{{ row.salary?.toLocaleString() }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="150" align="center">
@@ -34,8 +34,8 @@
     <el-dialog v-model="dialogVisible" :title="form.id ? '编辑岗位等级' : '新增岗位等级'" width="520px" class="form-dialog">
       <el-form :model="form" label-width="80px" class="dialog-form">
         <el-form-item label="名称"><el-input v-model="form.name" placeholder="请输入名称" /></el-form-item>
-        <el-form-item label="编码"><el-input v-model="form.code" placeholder="请输入编码" /></el-form-item>
-        <el-form-item label="基础薪资"><el-input-number v-model="form.baseSalary" :min="0" :precision="2" style="width:100%" /></el-form-item>
+        <el-form-item label="岗级"><el-input-number v-model="form.level" :min="1" style="width:100%" /></el-form-item>
+        <el-form-item label="岗位薪资"><el-input-number v-model="form.salary" :min="0" :precision="2" style="width:100%" /></el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible=false">取消</el-button>
@@ -65,7 +65,7 @@ async function load() {
 }
 
 async function openDialog(row) {
-  form.value = row ? { ...await postLevelGetById(row.id).then(r => r.data || row) } : { name: '', code: '', baseSalary: 0 }
+  form.value = row ? { ...await postLevelGetById(row.id).then(r => r.data || row) } : { name: '', level: 1, salary: 0 }
   dialogVisible.value = true
 }
 

@@ -21,10 +21,10 @@
     <el-table :data="list" border stripe @selection-change="s => selected = s" class="data-table" :header-cell-style="{background:'#f5f7fa',color:'#606266'}">
       <el-table-column type="selection" width="50" align="center" />
       <el-table-column prop="id" label="ID" width="70" align="center" />
-      <el-table-column prop="empName" label="员工" width="100" />
-      <el-table-column prop="month" label="月份" width="80" align="center" />
-      <el-table-column prop="baseSalary" label="基本工资" width="100" align="right">
-        <template #default="{ row }"><span class="money-text">{{ row.baseSalary?.toLocaleString() }}</span></template>
+      <el-table-column prop="user_name" label="员工" width="100" />
+      <el-table-column prop="salary_year_month" label="月份" width="80" align="center" />
+      <el-table-column prop="base_salary" label="基本工资" width="100" align="right">
+        <template #default="{ row }"><span class="money-text">{{ row.base_salary?.toLocaleString() }}</span></template>
       </el-table-column>
       <el-table-column prop="bonus" label="奖金" width="100" align="right">
         <template #default="{ row }"><span class="money-text green">{{ row.bonus?.toLocaleString() }}</span></template>
@@ -32,12 +32,12 @@
       <el-table-column prop="deduction" label="扣款" width="100" align="right">
         <template #default="{ row }"><span class="money-text red">{{ row.deduction?.toLocaleString() }}</span></template>
       </el-table-column>
-      <el-table-column prop="actualSalary" label="实发工资" width="110" align="right">
-        <template #default="{ row }"><span class="money-text bold">{{ row.actualSalary?.toLocaleString() }}</span></template>
+      <el-table-column prop="actual_salary" label="实发工资" width="110" align="right">
+        <template #default="{ row }"><span class="money-text bold">{{ row.actual_salary?.toLocaleString() }}</span></template>
       </el-table-column>
-      <el-table-column prop="stateName" label="状态" width="80" align="center">
+      <el-table-column prop="status_name" label="状态" width="80" align="center">
         <template #default="{ row }">
-          <el-tag :type="row.state === 1 ? 'success' : 'info'" size="small" effect="light">{{ row.stateName }}</el-tag>
+          <el-tag :type="row.status === 1 ? 'success' : 'info'" size="small" effect="light">{{ row.status_name }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="150" fixed="right" align="center">
@@ -52,9 +52,9 @@
     <el-pagination background layout="total, sizes, prev, pager, next" :total="total" :page-sizes="[10,20,50]" :page-size="page.pageSize" v-model:current-page="page.pageIndex" @current-change="load" @size-change="load" class="page-pagination" />
     <el-dialog v-model="dialogVisible" :title="form.id ? '编辑薪资' : '新增薪资'" width="520px" class="form-dialog">
       <el-form :model="form" label-width="80px" class="dialog-form">
-        <el-form-item label="员工ID"><el-input v-model="form.empId" placeholder="请输入员工ID" /></el-form-item>
-        <el-form-item label="月份"><el-input v-model="form.month" placeholder="如 2024-01" /></el-form-item>
-        <el-form-item label="基本工资"><el-input-number v-model="form.baseSalary" :min="0" :precision="2" style="width:100%" /></el-form-item>
+        <el-form-item label="员工ID"><el-input v-model="form.emp_id" placeholder="请输入员工ID" /></el-form-item>
+        <el-form-item label="月份"><el-input v-model="form.salary_year_month" placeholder="如 2024-01" /></el-form-item>
+        <el-form-item label="基本工资"><el-input-number v-model="form.base_salary" :min="0" :precision="2" style="width:100%" /></el-form-item>
         <el-form-item label="奖金"><el-input-number v-model="form.bonus" :min="0" :precision="2" style="width:100%" /></el-form-item>
         <el-form-item label="扣款"><el-input-number v-model="form.deduction" :min="0" :precision="2" style="width:100%" /></el-form-item>
       </el-form>
@@ -87,7 +87,7 @@ async function load() {
 }
 
 async function openDialog(row) {
-  form.value = row ? { ...await salaryGetById(row.id).then(r => r.data || row) } : { empId: '', month: '', baseSalary: 0, bonus: 0, deduction: 0 }
+  form.value = row ? { ...await salaryGetById(row.id).then(r => r.data || row) } : { emp_id: '', salary_year_month: '', base_salary: 0, bonus: 0, deduction: 0 }
   dialogVisible.value = true
 }
 

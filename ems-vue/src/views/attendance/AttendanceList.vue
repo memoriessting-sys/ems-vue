@@ -20,8 +20,8 @@
     </div>
     <el-table :data="list" border stripe class="data-table" :header-cell-style="{background:'#f5f7fa',color:'#606266'}">
       <el-table-column prop="id" label="ID" width="70" align="center" />
-      <el-table-column prop="empName" label="员工" width="100" />
-      <el-table-column prop="date" label="日期" width="120" />
+      <el-table-column prop="userName" label="员工" width="100" />
+      <el-table-column prop="attendanceDate" label="日期" width="120" />
       <el-table-column prop="checkInTime" label="签到时间" width="100" />
       <el-table-column prop="checkOutTime" label="签退时间" width="100" />
       <el-table-column prop="stateName" label="状态" width="100" align="center">

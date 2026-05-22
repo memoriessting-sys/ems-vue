@@ -40,23 +40,26 @@ const trendChart = ref(null)
 
 onMounted(async () => {
   const [basic, dist, trend] = await Promise.all([basicStats(), employeeDistribution(), attendanceTrend()])
-  if (basic.code === 200) {
+
+  if (basic.code === 200 && basic.data) {
     const d = basic.data
     stats.value = [
-      { label: '员工总数', value: d.empCount ?? 0, color: '#409eff', icon: User },
-      { label: '部门数量', value: d.deptCount ?? 0, color: '#67c23a', icon: OfficeBuilding },
-      { label: '今日出勤', value: d.todayAttendance ?? 0, color: '#e6a23c', icon: Clock },
-      { label: '待审请假', value: d.pendingLeave ?? 0, color: '#f56c6c', icon: Document }
+      { label: '员工总数', value: d.employeeCount ?? 0, color: '#409eff', icon: User },
+      { label: '部门数量', value: d.departmentCount ?? 0, color: '#67c23a', icon: OfficeBuilding },
+      { label: '出勤人次', value: d.attendanceCount ?? 0, color: '#e6a23c', icon: Clock },
+      { label: '请假人次', value: d.leaveCount ?? 0, color: '#f56c6c', icon: Document }
     ]
   }
+
   await nextTick()
-  if (dist.code === 200 && dist.data) {
+
+  if (dist.code === 200 && dist.data && dist.data.length) {
     const c = echarts.init(deptChart.value)
     c.setOption({
       tooltip: { trigger: 'item', formatter: '{b}: {c}人 ({d}%)' },
       series: [{
         type: 'pie', radius: ['35%', '65%'], center: ['50%', '50%'],
-        data: dist.data.map(i => ({ name: i.name, value: i.count })),
+        data: dist.data.map(i => ({ name: i.deptName, value: i.count })),
         label: { formatter: '{b}\n{c}人', fontSize: 12 },
         itemStyle: { borderRadius: 6, borderColor: '#fff', borderWidth: 2 },
         emphasis: { itemStyle: { shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.2)' } }
@@ -64,7 +67,8 @@ onMounted(async () => {
       color: ['#409eff', '#67c23a', '#e6a23c', '#f56c6c', '#909399', '#533483']
     })
   }
-  if (trend.code === 200 && trend.data) {
+
+  if (trend.code === 200 && trend.data && trend.data.length) {
     const c = echarts.init(trendChart.value)
     c.setOption({
       tooltip: { trigger: 'axis' },
@@ -102,7 +106,6 @@ onMounted(async () => {
 .stat-info { flex: 1; }
 .stat-label { font-size: 13px; color: #909399; margin-bottom: 6px; }
 .stat-value { font-size: 28px; font-weight: 700; color: var(--accent); }
-.chart-row { }
 .chart-card { border-radius: 12px !important; }
 .chart-title { font-weight: 600; font-size: 15px; }
 .chart-box { height: 350px; }

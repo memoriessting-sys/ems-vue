@@ -5,9 +5,12 @@
     </template>
     <div class="toolbar">
       <div class="toolbar-left">
-        <el-input v-model="filters.empName" placeholder="搜索员工姓名" clearable class="search-input" @clear="load">
-          <template #prefix><el-icon><Search /></el-icon></template>
-        </el-input>
+        <el-select v-model="filters.leaveTypeCode" placeholder="请假类型" clearable class="search-select" @change="load">
+          <el-option label="事假" value="1" />
+          <el-option label="病假" value="2" />
+          <el-option label="年假" value="3" />
+          <el-option label="婚假" value="4" />
+        </el-select>
         <el-select v-model="filters.status" placeholder="选择状态" clearable class="search-select" @change="load">
           <el-option label="待审批" :value="0" />
           <el-option label="已批准" :value="1" />
@@ -19,17 +22,17 @@
     </div>
     <el-table :data="list" border stripe class="data-table" :header-cell-style="{background:'#f5f7fa',color:'#606266'}">
       <el-table-column prop="id" label="ID" width="70" align="center" />
-      <el-table-column prop="empName" label="员工" width="100" />
-      <el-table-column prop="type" label="请假类型" width="100" align="center">
+      <el-table-column prop="emp_name" label="员工" width="100" />
+      <el-table-column prop="leave_type_name" label="请假类型" width="100" align="center">
         <template #default="{ row }">
-          <el-tag size="small" effect="plain">{{ row.type }}</el-tag>
+          <el-tag size="small" effect="plain">{{ row.leave_type_name }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="startDate" label="开始日期" width="120" />
-      <el-table-column prop="endDate" label="结束日期" width="120" />
-      <el-table-column prop="days" label="天数" width="70" align="center" />
-      <el-table-column prop="reason" label="原因" min-width="150" />
-      <el-table-column prop="stateName" label="状态" width="80" align="center">
+      <el-table-column prop="leaveStartTime" label="开始日期" width="120" />
+      <el-table-column prop="leaveEndTime" label="结束日期" width="120" />
+      <el-table-column prop="leave_days" label="天数" width="70" align="center" />
+      <el-table-column prop="leave_reason" label="原因" min-width="150" />
+      <el-table-column prop="status_name" label="状态" width="80" align="center">
         <template #default="{ row }">
           <el-tag :type="leaveStateType(row.state)" size="small" effect="light">{{ row.stateName }}</el-tag>
         </template>
@@ -48,10 +51,10 @@
     <el-pagination background layout="total, sizes, prev, pager, next" :total="total" :page-sizes="[10,20,50]" :page-size="page.pageSize" v-model:current-page="page.pageIndex" @current-change="load" @size-change="load" class="page-pagination" />
     <el-dialog v-model="dialogVisible" title="申请请假" width="520px" class="form-dialog">
       <el-form :model="form" label-width="80px" class="dialog-form">
-        <el-form-item label="请假类型"><el-select v-model="form.type" placeholder="请选择类型" style="width:100%"><el-option label="事假" value="事假" /><el-option label="病假" value="病假" /><el-option label="年假" value="年假" /><el-option label="婚假" value="婚假" /></el-select></el-form-item>
-        <el-form-item label="开始日期"><el-date-picker v-model="form.startDate" type="date" value-format="YYYY-MM-DD" placeholder="选择开始日期" style="width:100%" /></el-form-item>
-        <el-form-item label="结束日期"><el-date-picker v-model="form.endDate" type="date" value-format="YYYY-MM-DD" placeholder="选择结束日期" style="width:100%" /></el-form-item>
-        <el-form-item label="原因"><el-input v-model="form.reason" type="textarea" :rows="3" placeholder="请输入请假原因" /></el-form-item>
+        <el-form-item label="请假类型"><el-select v-model="form.leaveTypeCode" placeholder="请选择类型" style="width:100%"><el-option label="事假" value="1" /><el-option label="病假" value="2" /><el-option label="年假" value="3" /><el-option label="婚假" value="4" /></el-select></el-form-item>
+        <el-form-item label="开始日期"><el-date-picker v-model="form.leaveStartTime" type="datetime" value-format="YYYY-MM-DD HH:mm" placeholder="选择开始时间" style="width:100%" /></el-form-item>
+        <el-form-item label="结束日期"><el-date-picker v-model="form.leaveEndTime" type="datetime" value-format="YYYY-MM-DD HH:mm" placeholder="选择结束时间" style="width:100%" /></el-form-item>
+        <el-form-item label="原因"><el-input v-model="form.leaveReason" type="textarea" :rows="3" placeholder="请输入请假原因" /></el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible=false">取消</el-button>
@@ -66,7 +69,7 @@ import { ref, onMounted } from 'vue'
 import { leavePaged, leaveSave, leaveDelete, leaveApprove, leaveReturn } from '../../api/leave'
 import { ElMessage } from 'element-plus'
 
-const filters = ref({ empName: '', status: null })
+const filters = ref({ status: null, leaveTypeCode: null })
 const page = ref({ pageIndex: 1, pageSize: 10 })
 const list = ref([])
 const total = ref(0)
@@ -87,7 +90,7 @@ async function load() {
 }
 
 function openDialog() {
-  form.value = { type: '', startDate: '', endDate: '', reason: '' }
+  form.value = { leaveTypeCode: '', leaveStartTime: '', leaveEndTime: '', leaveReason: '' }
   dialogVisible.value = true
 }
 

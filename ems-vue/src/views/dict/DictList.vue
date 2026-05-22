@@ -5,7 +5,7 @@
     </template>
     <div class="toolbar">
       <div class="toolbar-left">
-        <el-input v-model="filters.name" placeholder="搜索字典名称" clearable class="search-input" @clear="load">
+        <el-input v-model="filters.dictType" placeholder="搜索字典类型" clearable class="search-input" @clear="load">
           <template #prefix><el-icon><Search /></el-icon></template>
         </el-input>
         <el-button type="primary" @click="load" class="search-btn"><el-icon><Search /></el-icon>查询</el-button>
@@ -14,9 +14,11 @@
     </div>
     <el-table :data="list" border stripe class="data-table" :header-cell-style="{background:'#f5f7fa',color:'#606266'}">
       <el-table-column prop="id" label="ID" width="70" align="center" />
-      <el-table-column prop="name" label="名称" />
-      <el-table-column prop="code" label="编码" />
-      <el-table-column prop="value" label="值" />
+      <el-table-column prop="dictType" label="字典类型" />
+      <el-table-column prop="dictItemKey" label="键" />
+      <el-table-column prop="dictItemValue" label="值" />
+      <el-table-column prop="sort" label="排序" width="80" align="center" />
+      <el-table-column prop="statusName" label="状态" width="80" align="center" />
       <el-table-column label="操作" width="150" align="center">
         <template #default="{ row }">
           <el-button link type="primary" @click="openDialog(row)" class="op-btn"><el-icon><Edit /></el-icon>编辑</el-button>
@@ -29,9 +31,10 @@
     <el-pagination background layout="total, sizes, prev, pager, next" :total="total" :page-sizes="[10,20,50]" :page-size="page.pageSize" v-model:current-page="page.pageIndex" @current-change="load" @size-change="load" class="page-pagination" />
     <el-dialog v-model="dialogVisible" :title="form.id ? '编辑字典' : '新增字典'" width="520px" class="form-dialog">
       <el-form :model="form" label-width="80px" class="dialog-form">
-        <el-form-item label="名称"><el-input v-model="form.name" placeholder="请输入名称" /></el-form-item>
-        <el-form-item label="编码"><el-input v-model="form.code" placeholder="请输入编码" /></el-form-item>
-        <el-form-item label="值"><el-input v-model="form.value" placeholder="请输入值" /></el-form-item>
+        <el-form-item label="字典类型"><el-input v-model="form.dictType" placeholder="请输入字典类型" /></el-form-item>
+        <el-form-item label="键"><el-input v-model="form.dictItemKey" placeholder="请输入键" /></el-form-item>
+        <el-form-item label="值"><el-input v-model="form.dictItemValue" placeholder="请输入值" /></el-form-item>
+        <el-form-item label="排序"><el-input-number v-model="form.sort" :min="0" style="width:100%" /></el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible=false">取消</el-button>
@@ -46,7 +49,7 @@ import { ref, onMounted } from 'vue'
 import { dictPaged, dictSave, dictDelete } from '../../api/dict'
 import { ElMessage } from 'element-plus'
 
-const filters = ref({ name: '' })
+const filters = ref({ dictType: '' })
 const page = ref({ pageIndex: 1, pageSize: 10 })
 const list = ref([])
 const total = ref(0)
@@ -61,7 +64,7 @@ async function load() {
 }
 
 function openDialog(row) {
-  form.value = row ? { ...row } : { name: '', code: '', value: '' }
+  form.value = row ? { ...row } : { dictType: '', dictItemKey: '', dictItemValue: '', sort: 0 }
   dialogVisible.value = true
 }
 

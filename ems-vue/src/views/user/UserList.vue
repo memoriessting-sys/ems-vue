@@ -15,7 +15,7 @@
     <el-table :data="list" border stripe class="data-table" :header-cell-style="{background:'#f5f7fa',color:'#606266'}">
       <el-table-column prop="id" label="ID" width="70" align="center" />
       <el-table-column prop="account" label="账号" />
-      <el-table-column prop="userName" label="用户名" />
+      <el-table-column prop="name" label="用户名" />
       <el-table-column prop="roleTypeName" label="角色" width="120" align="center">
         <template #default="{ row }">
           <el-tag :type="roleTagType(row.roleType)" size="small" effect="light">{{ row.roleTypeName }}</el-tag>
