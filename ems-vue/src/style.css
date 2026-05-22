@@ -1,0 +1,21 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body, #app { height: 100%; font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Arial, sans-serif; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { background: #c0c4cc; border-radius: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+.el-card { border-radius: 8px !important; }
+.el-card__header { font-weight: 600; font-size: 15px; }
+
+.el-table th.el-table__cell { background-color: #f5f7fa !important; color: #606266; font-weight: 600; }
+
+.el-dialog { border-radius: 12px !important; }
+.el-dialog__header { border-bottom: 1px solid #f0f0f0; padding-bottom: 16px !important; }
+.el-dialog__footer { border-top: 1px solid #f0f0f0; padding-top: 16px !important; }
+
+.el-pagination { margin-top: 20px; display: flex; justify-content: flex-end; }
+
+.fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }

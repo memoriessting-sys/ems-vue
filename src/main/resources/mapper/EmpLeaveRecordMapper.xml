@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cqie.edu.ems.mapper.EmpLeaveRecordMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id,user_id,create_time,leave_start_time,leave_end_time,leave_reason,leave_type_code,approve_user_id,approve_time,approve_content,status,real_end_time
+    </sql>
+
+    <!--查询员工请假记录-->
+    <select id="list" parameterType="cqie.edu.ems.domain.qo.EmpLeaveRecordQo" resultType="cqie.edu.ems.domain.entity.EmpLeaveRecord">
+        select
+        <include refid="Base_Column_List"/>
+        from emp_leave_record
+        <where>
+            <if test="user_id!=null">
+                and user_id = #{user_id}
+            </if>
+            <if test="createTimeStart!=null">
+                and create_time &gt;= #{createTimeStart}
+            </if>
+            <if test="createTimeEnd!=null">
+                and create_time &lt;= #{createTimeEnd}
+            </if>
+            <if test="leaveStartTimeStart!=null">
+                and leave_start_time &gt;= #{leaveStartTimeStart}
+            </if>
+            <if test="leaveStartTimeEnd!=null">
+                and leave_start_time &lt;= #{leaveStartTimeEnd}
+            </if>
+            <if test="leaveEndTimeStart!=null">
+                and leave_end_time &gt;= #{leaveEndTimeStart}
+            </if>
+            <if test="leaveEndTimeEnd!=null">
+                and leave_end_time &lt;= #{leaveEndTimeEnd}
+            </if>
+            <if test="leaveTypeCode!=null and leaveTypeCode!=''">
+                and leave_type_code = #{leaveTypeCode}
+            </if>
+            <if test="status!=null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <!--新增员工请假记录-->
+    <insert id="insert" parameterType="cqie.edu.ems.domain.entity.EmpLeaveRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into emp_leave_record(
+        user_id,create_time,leave_start_time,leave_end_time,leave_reason,leave_type_code,approve_user_id,approve_time,approve_content,status,real_end_time
+        )
+        values (
+        #{user_id},#{createTime},#{leaveStartTime},#{leaveEndTime},#{leaveReason},#{leaveTypeCode},#{approve_user_id},#{approveTime},#{approveContent},#{status},#{realEndTime}
+        )
+    </insert>
+
+    <!--修改员工请假记录-->
+    <update id="update" parameterType="cqie.edu.ems.domain.entity.EmpLeaveRecord">
+        update emp_leave_record
+        <set>
+            <if test="user_id!=null">
+                user_id = #{user_id},
+            </if>
+            <if test="createTime!=null">
+                create_time = #{createTime},
+            </if>
+            <if test="leaveStartTime!=null">
+                leave_start_time = #{leaveStartTime},
+            </if>
+            <if test="leaveEndTime!=null">
+                leave_end_time = #{leaveEndTime},
+            </if>
+            <if test="leaveReason!=null and leaveReason!=''">
+                leave_reason = #{leaveReason},
+            </if>
+            <if test="leaveTypeCode!=null and leaveTypeCode!=''">
+                leave_type_code = #{leaveTypeCode},
+            </if>
+            <if test="approve_user_id!=null">
+                approve_user_id = #{approve_user_id},
+            </if>
+            <if test="approveTime!=null">
+                approve_time = #{approveTime},
+            </if>
+            <if test="approveContent!=null and approveContent!=''">
+                approve_content = #{approveContent},
+            </if>
+            <if test="status!=null">
+                status = #{status},
+            </if>
+            <if test="realEndTime!=null">
+                real_end_time = #{realEndTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--根据主键删除员工请假记录-->
+    <delete id="deleteById" parameterType="Long">
+        delete from emp_leave_record where id = #{id}
+    </delete>
+
+    <!--根据主键获取员工请假记录-->
+    <select id="getById" parameterType="Long" resultType="cqie.edu.ems.domain.entity.EmpLeaveRecord">
+        select
+        <include refid="Base_Column_List"/>
+        from emp_leave_record
+        where id = #{id}
+    </select>
+
+    <!-- 获取待审核的请假申请总数 -->
+    <select id="countPendingLeaves" resultType="int">
+        SELECT COUNT(*) FROM emp_leave_record WHERE status = 1
+    </select>
+
+    <select id="count" resultType="long">
+        SELECT COUNT(*)
+        FROM emp_leave_record
+        <where>
+            <if test="user_id != null">
+                AND user_id = #{user_id}
+            </if>
+            <if test="leaveTypeCode != null and leaveTypeCode != ''">
+                AND leave_type_code = #{leaveTypeCode}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            <if test="leaveStartTimeStart != null">
+                AND leave_start_time >= #{leaveStartTimeStart}
+            </if>
+            <if test="leaveEndTimeEnd != null">
+                AND leave_end_time &lt;= #{leaveEndTimeEnd}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectList" resultType="cqie.edu.ems.domain.vo.EmpLeaveRecordVo">
+        SELECT 
+            lr.*,
+            COALESCE(e1.name, u1.name) as userName,
+            COALESCE(e2.name, u2.name) as approveUserName,
+            d.dict_item_value as leaveTypeName,
+            CASE lr.status
+                WHEN 0 THEN '草稿'
+                WHEN 1 THEN '待审'
+                WHEN 2 THEN '通过'
+                WHEN 3 THEN '驳回'
+                WHEN 9 THEN '销假'
+                ELSE '未知'
+            END as statusName
+        FROM emp_leave_record lr
+        LEFT JOIN sys_user u1 ON lr.user_id = u1.id
+        LEFT JOIN emp e1 ON u1.id = e1.user_id
+        LEFT JOIN sys_user u2 ON lr.approve_user_id = u2.id
+        LEFT JOIN emp e2 ON u2.id = e2.user_id
+        LEFT JOIN sys_dict d ON d.dict_type = '请假类型' AND d.dict_item_key = lr.leave_type_code
+        <where>
+            <if test="user_id != null">
+                AND lr.user_id = #{user_id}
+            </if>
+            <if test="leaveTypeCode != null and leaveTypeCode != ''">
+                AND lr.leave_type_code = #{leaveTypeCode}
+            </if>
+            <if test="status != null">
+                AND lr.status = #{status}
+            </if>
+            <if test="leaveStartTimeStart != null">
+                AND lr.leave_start_time >= #{leaveStartTimeStart}
+            </if>
+            <if test="leaveEndTimeEnd != null">
+                AND lr.leave_end_time &lt;= #{leaveEndTimeEnd}
+            </if>
+        </where>
+        ORDER BY lr.create_time DESC
+    </select>
+</mapper> 

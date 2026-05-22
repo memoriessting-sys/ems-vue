@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cqie.edu.ems.mapper.SysDeptMapper">
+    <!--查询部门-->
+    <select id="list" parameterType="cqie.edu.ems.domain.qo.SysDeptQo" resultType="cqie.edu.ems.domain.vo.SysDeptVo">
+        select 
+            sd.*, 
+            su.name as managerUserName
+        from sys_dept sd
+        left join sys_user su on sd.manager_user_id = su.id
+        <where>
+            <if test="name!=null and name!=''">
+                and sd.name like CONCAT('%', #{name}, '%')
+            </if>
+            <if test="manager_user_id!=null">
+                and sd.manager_user_id = #{manager_user_id}
+            </if>
+            <if test="managerUserName!=null and managerUserName!=''">
+                and su.name like CONCAT('%', #{managerUserName}, '%')
+            </if>
+            <if test="parent_id!=null">
+                and sd.parent_id = #{parent_id}
+            </if>
+            <if test="sort_code!=null">
+                and sd.sort_code = #{sort_code}
+            </if>
+            <if test="status!=null">
+                and sd.status = #{status}
+            </if>
+        </where>
+        order by sd.sort_code asc, sd.id asc
+    </select>
+    <!--根据主键删除用户-->
+    <delete id="deleteById" parameterType="long">
+        delete from sys_dept where id=#{id}
+    </delete>
+    <!--查询指定部门名称的用户-->
+    <select id="getByName" resultType="cqie.edu.ems.domain.entity.SysDept">
+        select * from sys_dept
+        where name=#{name}
+        <if test="id!=null">
+            and id !=#{id}
+        </if>
+    </select>
+    <!--新增部门-->
+    <insert id="insert" parameterType="cqie.edu.ems.domain.entity.SysDept" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_dept(name, manager_user_id, parent_id, sort_code,status)
+        values (#{name}, #{manager_user_id}, #{parent_id}, #{sort_code},#{status})
+    </insert>
+
+    <!--修改部门信息-->
+    <update id="update" parameterType="cqie.edu.ems.domain.entity.SysDept">
+        update sys_dept
+        <set>
+            <if test="name!=null and name!=''">
+                ,name=#{name}
+            </if>
+            <if test="manager_user_id!=null and manager_user_id!=''"  >
+                ,manager_user_id=#{manager_user_id}
+            </if>
+            <if test="parent_id!=null">
+                ,parent_id=#{parent_id}
+            </if>
+            <if test="sort_code!=null">
+                ,sort_code=#{sort_code}
+            </if>
+            <if test="status!=null">
+                ,status=#{status}
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+    <!--根据id查询负责人id-->
+    <select id="getParentIdById" parameterType = "long" resultType="int">
+        select manager_user_id from sys_dept
+        where id = #{id}
+
+    </select>
+    <!--根据主键获取-->
+    <select id="getById" parameterType="long" resultType="cqie.edu.ems.domain.entity.SysDept">
+        select * from sys_dept where id=#{id}
+    </select>
+
+    <!-- 获取部门总数 -->
+    <select id="countAll" resultType="int">
+        SELECT COUNT(*) FROM sys_dept
+    </select>
+</mapper>

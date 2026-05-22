@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cqie.edu.ems.mapper.SysDictMapper">
+    <resultMap id="sysDictMap" type="cqie.edu.ems.domain.entity.SysDict">
+        <id property="id" column="id" />
+        <result property="dictType" column="dict_type" />
+        <result property="dictItemKey" column="dict_item_key" />
+        <result property="dictItemValue" column="dict_item_value" />
+        <result property="sortCode" column="sort_code" />
+        <result property="status" column="status" />
+    </resultMap>
+    <!--查询-->
+    <select id="list" parameterType="cqie.edu.ems.domain.qo.SysDictQo" resultMap="sysDictMap">
+        select * from sys_dict
+        <where>
+            <if test="dictType!=null and dictType!=''">
+                and dict_type=#{dictType}
+            </if>
+        </where>
+    </select>
+    <!--新增-->
+    <insert id="insert" parameterType="cqie.edu.ems.domain.entity.SysDict" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_dict(dict_type,dict_item_key, dict_item_value, sort_code, status)
+        values (#{dictType},#{dictItemKey}, #{dictItemValue}, #{sortCode}, #{status})
+    </insert>
+    <!--修改-->
+    <update id="update" parameterType="cqie.edu.ems.domain.entity.SysDict">
+        update sys_dict
+        <set>
+            <if test="dictType!=null and dictType!=''">
+                ,dict_type=#{dictType}
+            </if>
+            <if test="dictItemKey!=null and dictItemKey!=''">
+                ,dict_item_key=#{dictItemKey}
+            </if>
+            <if test="dictItemValue!=null and dictItemValue!=''">
+                ,dict_item_value=#{dictItemValue}
+            </if>
+            <if test="sortCode!=null">
+                ,sort_code=#{sortCode}
+            </if>
+            <if test="status!=null">
+                ,status=#{status}
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+    <!--根据主键删除-->
+    <delete id="deleteById" parameterType="int">
+        delete from sys_dict where id=#{id}
+    </delete>
+    <!--根据主键获取-->
+    <select id="getById" parameterType="long" resultMap="sysDictMap">
+        select * from sys_dict where id=#{id}
+    </select>
+
+    <!--根据字典类型和字典项键获取-->
+    <select id="getByTypeAndKey" parameterType="map" resultMap="sysDictMap">
+        select * from sys_dict where dict_type = #{dictType} and dict_item_key = #{dictItemKey}
+    </select>
+</mapper>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cqie.edu.ems.mapper.EmpPostLevelMapper">
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="cqie.edu.ems.domain.entity.EmpPostLevel">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="level" column="level"/>
+        <result property="salary" column="salary"/>
+        <result property="sort_code" column="sort_code"/>
+        <result property="status" column="status"/>
+    </resultMap>
+    
+    <!--查询岗位-->
+    <select id="list" parameterType="cqie.edu.ems.domain.qo.EmpPostLevelQo" resultMap="BaseResultMap">
+        select * from emp_post_level
+        <where>
+            <if test="name!=null and name!=''">
+                and name like CONCAT('%', #{name}, '%')
+            </if>
+            <if test="level!=null">
+                and level = #{level}
+            </if>
+            <if test="salary!=null">
+                and salary = #{salary}
+            </if>
+            <if test="sort_code!=null">
+                and sort_code = #{sort_code}
+            </if>
+            <if test="status!=null">
+                and status = #{status}
+            </if>
+        </where>
+        order by sort_code asc, id asc
+    </select>
+    <!--新增用户-->
+    <insert id="insert" parameterType="cqie.edu.ems.domain.entity.EmpPostLevel" useGeneratedKeys="true" keyProperty="id">
+        insert into emp_post_level(name, level, salary, sort_code,status)
+        values (#{name}, #{level}, #{salary}, #{sort_code},#{status})
+    </insert>
+
+    <!--修改用户-->
+    <update id="update" parameterType="cqie.edu.ems.domain.entity.EmpPostLevel">
+        update emp_post_level
+        <set>
+            <if test="name!=null and name!=''">
+                ,name=#{name}
+            </if>
+            <if test="level!=null and level!=''">
+                ,level=#{level}
+            </if>
+            <if test="salary!=null and salary!=''">
+                ,salary=#{salary}
+            </if>
+            <if test="sort_code!=null">
+                ,sort_code=#{sort_code}
+            </if>
+            <if test="status!=null">
+                ,status=#{status}
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+    <!--根据主键删除用户-->
+    <delete id="deleteById" parameterType="long">
+        delete from emp_post_level where id=#{id}
+    </delete>
+
+    <!--根据主键获取用户-->
+    <select id="getById" parameterType="long" resultMap="BaseResultMap">
+        select * from emp_post_level where id=#{id}
+    </select>
+    <!--查询指定登录账号的用户-->
+    <select id="getByName" resultMap="BaseResultMap">
+        select * from emp_post_level
+        where name=#{name}
+        <if test="id!=null">
+            and id !=#{id}
+        </if>
+    </select>
+</mapper>

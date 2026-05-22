@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cqie.edu.ems.mapper.SysUserMapper">
+    <!--查询用户-->
+    <select id="list" parameterType="cqie.edu.ems.domain.qo.SysUserQo" resultType="cqie.edu.ems.domain.entity.SysUser">
+        select su.*, d.name as deptName 
+        from sys_user su
+        left join emp e on su.id = e.user_id
+        left join sys_dept d on e.dept_id = d.id
+        <where>
+            <if test="name!=null and name!=''">
+                and su.name like CONCAT('%', #{name}, '%')
+            </if>
+            <if test="account!=null and account!=''">
+                and su.account like CONCAT('%', #{account}, '%')
+            </if>
+            <if test="status!=null">
+                and su.status = #{status}
+            </if>
+            <if test="roleType!=null">
+                and su.role_type = #{roleType}
+            </if>
+            <if test="deptId!=null">
+                and e.dept_id = #{deptId}
+            </if>
+        </where>
+        order by su.id desc
+    </select>
+    <!--新增用户-->
+    <insert id="insert" parameterType="cqie.edu.ems.domain.entity.SysUser" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_user(name, account, password, status)
+        values (#{name}, #{account}, #{password}, #{status})
+    </insert>
+    <!--修改用户-->
+    <update id="update" parameterType="cqie.edu.ems.domain.entity.SysUser">
+        update sys_user
+        <set>
+            <if test="name!=null and name!=''">
+                ,name=#{name}
+            </if>
+            <if test="account!=null and account!=''">
+                ,account=#{account}
+            </if>
+            <if test="password!=null and password!=''">
+                ,password=#{password}
+            </if>
+            <if test="status!=null">
+                ,status=#{status}
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+    <!--根据主键删除用户-->
+    <delete id="deleteById" parameterType="long">
+        delete from sys_user where id=#{id}
+    </delete>
+    <!--根据主键获取用户-->
+    <select id="getById" parameterType="long" resultType="cqie.edu.ems.domain.entity.SysUser">
+        select * from sys_user where id=#{id}
+    </select>
+    <!--查询指定登录账号的用户-->
+    <select id="getByAccount" resultType="cqie.edu.ems.domain.entity.SysUser">
+        select * from sys_user
+        where account=#{account}
+        <if test="id!=null">
+            and id !=#{id}
+        </if>
+    </select>
+    <!--登录验证-->
+    <select id="checkLogin" resultType="cqie.edu.ems.domain.entity.SysUser">
+        select * from sys_user
+        where account=#{account} and password=#{password}
+    </select>
+    <!--根据account获取实体（简单版，只通过account查询）-->
+    <select id="getByAccountSimple" resultType="cqie.edu.ems.domain.entity.SysUser">
+        select * from sys_user
+        where account=#{account}
+    </select>
+    <!-- 添加根据用户姓名查询用户的SQL映射 -->
+    <select id="getByName" resultType="cqie.edu.ems.domain.entity.SysUser" parameterType="java.lang.String">
+        select 
+            id, account, password, name, status, role_type
+        from sys_user
+        where name = #{name}
+        limit 1
+    </select>
+</mapper>

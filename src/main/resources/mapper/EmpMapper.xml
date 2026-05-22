@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cqie.edu.ems.mapper.EmpMapper">
+
+    <!-- 通用查询结果列-->
+    <sql id="Base_Column_List">
+        id,name,code,email,mobile,id_card,birthday,sex,nation_code,political_code,native_place,graduate_school,major_code,highest_education_code,highest_degree_code,habitation,marital_status,entry_date,leave_date,dept_id,post_level_id,user_id,role_type,status
+    </sql>
+
+    <!--查询员工-->
+    <select id="list" parameterType="cqie.edu.ems.domain.qo.EmpQo" resultType="cqie.edu.ems.domain.vo.EmpVo">
+        select
+        e.id,e.name,e.code,e.email,e.mobile,e.id_card,e.birthday,e.sex,e.nation_code,e.political_code,e.native_place,e.graduate_school,e.major_code,e.highest_education_code,e.highest_degree_code,e.habitation,e.marital_status,e.entry_date,e.leave_date,e.dept_id,e.post_level_id,e.user_id,e.role_type,e.status,
+        d.name AS deptName,
+        epl.name AS postLevelName
+        from emp e
+        LEFT JOIN sys_dept d ON e.dept_id = d.id
+        LEFT JOIN emp_post_level epl ON e.post_level_id = epl.id
+        <where>
+            <if test="namePattern!=null and namePattern!=''">
+                and e.name like #{namePattern}
+            </if>
+            <if test="name!=null and name!='' and (namePattern==null or namePattern=='')">
+                and e.name like CONCAT('%', #{name}, '%')
+            </if>
+            <if test="codePattern!=null and codePattern!=''">
+                and e.code like #{codePattern}
+            </if>
+            <if test="code!=null and code!='' and (codePattern==null or codePattern=='')">
+                and e.code like CONCAT('%', #{code}, '%')
+            </if>
+            <if test="mobilePattern!=null and mobilePattern!=''">
+                and e.mobile like #{mobilePattern}
+            </if>
+            <if test="mobile!=null and mobile!='' and (mobilePattern==null or mobilePattern=='')">
+                and e.mobile like CONCAT('%', #{mobile}, '%')
+            </if>
+            <if test="deptId!=null">
+                and e.dept_id = #{deptId}
+            </if>
+            <if test="postLevelId!=null">
+                and e.post_level_id = #{postLevelId}
+            </if>
+            <if test="status!=null">
+                and e.status = #{status}
+            </if>
+        </where>
+        order by e.id asc
+    </select>
+
+    <!--新增员工-->
+    <insert id="insert" parameterType="cqie.edu.ems.domain.entity.Emp" useGeneratedKeys="true" keyProperty="id">
+        insert into emp(
+        name,code,email,mobile,id_card,birthday,sex,nation_code,political_code,native_place,graduate_school,major_code,highest_education_code,highest_degree_code,habitation,marital_status,entry_date,leave_date,dept_id,post_level_id,user_id,role_type,status
+        )
+        values (
+        #{name},#{code},#{email},#{mobile},#{idCard},#{birthday},#{sex},#{nationCode},#{politicalCode},#{nativePlace},#{graduateSchool},#{majorCode},#{highestEducationCode},#{highestDegreeCode},#{habitation},#{maritalStatus},#{entryDate},#{leaveDate},#{deptId},#{postLevelId},#{userId},#{roleType},#{status}
+        )
+    </insert>
+
+    <!--修改员工-->
+    <update id="update" parameterType="cqie.edu.ems.domain.entity.Emp">
+        update emp
+        <set>
+            <if test="name!=null and name!=''">
+                name = #{name},
+            </if>
+            <if test="code!=null and code!=''">
+                code = #{code},
+            </if>
+            <if test="email!=null and email!=''">
+                email = #{email},
+            </if>
+            <if test="mobile!=null and mobile!=''">
+                mobile = #{mobile},
+            </if>
+            <if test="idCard!=null and idCard!=''">
+                id_card = #{idCard},
+            </if>
+            <if test="birthday!=null">
+                birthday = #{birthday},
+            </if>
+            <if test="sex!=null">
+                sex = #{sex},
+            </if>
+            <if test="nationCode!=null and nationCode!=''">
+                nation_code = #{nationCode},
+            </if>
+            <if test="politicalCode!=null and politicalCode!=''">
+                political_code = #{politicalCode},
+            </if>
+            <if test="nativePlace!=null and nativePlace!=''">
+                native_place = #{nativePlace},
+            </if>
+            <if test="graduateSchool!=null and graduateSchool!=''">
+                graduate_school = #{graduateSchool},
+            </if>
+            <if test="majorCode!=null and majorCode!=''">
+                major_code = #{majorCode},
+            </if>
+            <if test="highestEducationCode!=null and highestEducationCode!=''">
+                highest_education_code = #{highestEducationCode},
+            </if>
+            <if test="highestDegreeCode!=null and highestDegreeCode!=''">
+                highest_degree_code = #{highestDegreeCode},
+            </if>
+            <if test="habitation!=null and habitation!=''">
+                habitation = #{habitation},
+            </if>
+            <if test="maritalStatus!=null">
+                marital_status = #{maritalStatus},
+            </if>
+            <if test="entryDate!=null">
+                entry_date = #{entryDate},
+            </if>
+            <if test="leaveDate!=null">
+                leave_date = #{leaveDate},
+            </if>
+            <if test="deptId!=null">
+                dept_id = #{deptId},
+            </if>
+            <if test="postLevelId!=null">
+                post_level_id = #{postLevelId},
+            </if>
+            <if test="userId!=null">
+                user_id = #{userId},
+            </if>
+            <if test="roleType!=null">
+                role_type = #{roleType},
+            </if>
+            <if test="status!=null">
+                status = #{status},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--根据主键删除员工-->
+    <delete id="deleteById" parameterType="Long">
+        delete from emp where id = #{id}
+    </delete>
+
+    <!--根据主键获取员工-->
+    <select id="getById" parameterType="Long" resultType="cqie.edu.ems.domain.entity.Emp">
+        select
+        <include refid="Base_Column_List"/>
+        from emp
+        where id = #{id}
+    </select>
+
+    <!--根据工号获取员工-->
+    <select id="getByCode" parameterType="map" resultType="cqie.edu.ems.domain.entity.Emp">
+        select
+        <include refid="Base_Column_List"/>
+        from emp
+        where code = #{code}
+        <if test="id!=null">
+            and id != #{id}
+        </if>
+    </select>
+
+    <!--根据用户ID获取员工信息（关联用户表、部门表、岗位岗级表）-->
+    <select id="getByUserId" parameterType="Long" resultType="cqie.edu.ems.domain.entity.Emp">
+        SELECT
+            e.id, e.name, e.code, e.email, e.mobile, e.id_card, e.birthday, e.sex, e.nation_code,
+            e.political_code, e.native_place, e.graduate_school, e.major_code, e.highest_education_code,
+            e.highest_degree_code, e.habitation, e.marital_status, e.entry_date, e.leave_date,
+            e.dept_id, e.post_level_id, e.user_id, e.role_type, e.status,
+            d.name AS deptName,
+            epl.name AS postLevelName
+        FROM emp e
+        LEFT JOIN sys_user su ON e.user_id = su.id
+        LEFT JOIN sys_dept d ON e.dept_id = d.id
+        LEFT JOIN emp_post_level epl ON e.post_level_id = epl.id
+        WHERE e.user_id = #{userId}
+    </select>
+
+    <!-- 获取员工总数 -->
+    <select id="countAll" resultType="int">
+        SELECT COUNT(*) FROM emp
+    </select>
+
+    <!-- 添加根据员工姓名查询员工的SQL映射 -->
+    <select id="getByName" resultType="cqie.edu.ems.domain.entity.Emp" parameterType="java.lang.String">
+        select 
+            id, name, code, email, mobile, id_card, birthday, sex, nation_code, 
+            political_code, native_place, graduate_school, major_code, highest_education_code, 
+            highest_degree_code, habitation, marital_status, entry_date, leave_date, 
+            dept_id, post_level_id, user_id, role_type, status
+        from emp
+        where name = #{name}
+        limit 1
+    </select>
+
+    <!-- 获取所有员工列表 -->
+    <select id="selectList" parameterType="cqie.edu.ems.domain.qo.EmpQo" resultType="cqie.edu.ems.domain.entity.Emp">
+        select
+        <include refid="Base_Column_List"/>
+        from emp
+        <where>
+            <if test="namePattern!=null and namePattern!=''">
+                and name like #{namePattern}
+            </if>
+            <if test="name!=null and name!='' and (namePattern==null or namePattern=='')">
+                and name like CONCAT('%', #{name}, '%')
+            </if>
+            <if test="codePattern!=null and codePattern!=''">
+                and code like #{codePattern}
+            </if>
+            <if test="code!=null and code!='' and (codePattern==null or codePattern=='')">
+                and code like CONCAT('%', #{code}, '%')
+            </if>
+            <if test="deptId!=null">
+                and dept_id = #{deptId}
+            </if>
+            <if test="postLevelId!=null">
+                and post_level_id = #{postLevelId}
+            </if>
+            <if test="status!=null">
+                and status = #{status}
+            </if>
+        </where>
+        order by id asc
+    </select>
+
+    <!-- 获取员工分布统计（按部门） -->
+    <select id="getEmployeeDistributionByDept" resultType="java.util.Map">
+        SELECT 
+            d.name as deptName,
+            COUNT(e.id) as employeeCount
+        FROM sys_dept d
+        LEFT JOIN emp e ON d.id = e.dept_id AND e.status = 0
+        GROUP BY d.id, d.name
+        ORDER BY employeeCount DESC
+    </select>
+</mapper> 

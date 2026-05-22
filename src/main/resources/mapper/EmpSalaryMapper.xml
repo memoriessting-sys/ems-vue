@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cqie.edu.ems.mapper.EmpSalaryMapper">
+    <resultMap id="empSalaryMap" type="cqie.edu.ems.domain.entity.EmpSalary">
+        <id property="id" column="id"/>
+        <result property="empId" column="emp_id"/>
+        <result property="salaryYearMonth" column="salary_year_month"/>
+        <result property="baseSalary" column="base_salary"/>
+        <result property="postSalary" column="post_salary"/>
+        <result property="performanceSalary" column="performance_salary"/>
+        <result property="overtimeSalary" column="overtime_salary"/>
+        <result property="allowance" column="allowance"/>
+        <result property="bonus" column="bonus"/>
+        <result property="deduction" column="deduction"/>
+        <result property="actualSalary" column="actual_salary"/>
+        <result property="status" column="status"/>
+        <result property="payTime" column="pay_time"/>
+        <result property="remark" column="remark"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <resultMap id="empSalaryVoMap" type="cqie.edu.ems.domain.vo.EmpSalaryVo">
+        <id property="id" column="id"/>
+        <result property="emp_id" column="emp_id"/>
+        <result property="salary_year_month" column="salary_year_month"/>
+        <result property="base_salary" column="base_salary"/>
+        <result property="post_salary" column="post_salary"/>
+        <result property="performance_salary" column="performance_salary"/>
+        <result property="overtime_salary" column="overtime_salary"/>
+        <result property="allowance" column="allowance"/>
+        <result property="bonus" column="bonus"/>
+        <result property="deduction" column="deduction"/>
+        <result property="actual_salary" column="actual_salary"/>
+        <result property="status" column="status"/>
+        <result property="pay_time" column="pay_time"/>
+        <result property="remark" column="remark"/>
+        <result property="create_time" column="create_time"/>
+        <result property="update_time" column="update_time"/>
+        <result property="emp_name" column="emp_name"/>
+        <result property="status_name" column="status_name"/>
+    </resultMap>
+
+    <select id="paged" resultMap="empSalaryVoMap">
+        SELECT 
+            s.*,
+            e.name as emp_name,
+            CASE s.status 
+                WHEN 0 THEN '未发放'
+                WHEN 1 THEN '已发放'
+            END as status_name
+        FROM emp_salary s
+        LEFT JOIN emp e ON s.emp_id = e.id
+        <where>
+            <if test="qo.emp_id != null">
+                AND s.emp_id = #{qo.emp_id}
+            </if>
+            <if test="qo.salary_year_month != null and qo.salary_year_month != ''">
+                AND s.salary_year_month = #{qo.salary_year_month}
+            </if>
+            <if test="qo.status != null">
+                AND s.status = #{qo.status}
+            </if>
+            <if test="qo.pay_time_start != null">
+                AND s.pay_time >= #{qo.pay_time_start}
+            </if>
+            <if test="qo.pay_time_end != null">
+                AND s.pay_time &lt;= #{qo.pay_time_end}
+            </if>
+            <if test="qo.create_time_start != null">
+                AND s.create_time >= #{qo.create_time_start}
+            </if>
+            <if test="qo.create_time_end != null">
+                AND s.create_time &lt;= #{qo.create_time_end}
+            </if>
+        </where>
+        ORDER BY s.create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="cqie.edu.ems.domain.entity.EmpSalary" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO emp_salary (
+            emp_id, salary_year_month, base_salary, post_salary, performance_salary,
+            overtime_salary, allowance, bonus, deduction, actual_salary,
+            status, pay_time, remark, create_time, update_time
+        ) VALUES (
+            #{emp_id}, #{salary_year_month}, #{base_salary}, #{post_salary}, #{performance_salary},
+            #{overtime_salary}, #{allowance}, #{bonus}, #{deduction}, #{actual_salary},
+            #{status}, #{pay_time}, #{remark}, NOW(), NOW()
+        )
+    </insert>
+
+    <update id="update" parameterType="cqie.edu.ems.domain.entity.EmpSalary">
+        UPDATE emp_salary
+        <set>
+            <if test="emp_id != null">
+                emp_id = #{emp_id},
+            </if>
+            <if test="salary_year_month != null and salary_year_month != ''">
+                salary_year_month = #{salary_year_month},
+            </if>
+            <if test="base_salary != null">
+                base_salary = #{base_salary},
+            </if>
+            <if test="post_salary != null">
+                post_salary = #{post_salary},
+            </if>
+            <if test="performance_salary != null">
+                performance_salary = #{performance_salary},
+            </if>
+            <if test="overtime_salary != null">
+                overtime_salary = #{overtime_salary},
+            </if>
+            <if test="allowance != null">
+                allowance = #{allowance},
+            </if>
+            <if test="bonus != null">
+                bonus = #{bonus},
+            </if>
+            <if test="deduction != null">
+                deduction = #{deduction},
+            </if>
+            <if test="actual_salary != null">
+                actual_salary = #{actual_salary},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="pay_time != null">
+                pay_time = #{pay_time},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+            update_time = NOW()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM emp_salary WHERE id = #{id}
+    </delete>
+
+    <select id="getById" parameterType="java.lang.Long" resultMap="empSalaryVoMap">
+        SELECT 
+            s.*,
+            e.name as emp_name,
+            CASE s.status 
+                WHEN 0 THEN '未发放'
+                WHEN 1 THEN '已发放'
+            END as status_name
+        FROM emp_salary s
+        LEFT JOIN emp e ON s.emp_id = e.id
+        WHERE s.id = #{id}
+    </select>
+
+    <select id="getByEmpIdAndYearMonth" parameterType="map" resultMap="empSalaryVoMap">
+        SELECT 
+            s.*,
+            e.name as emp_name,
+            CASE s.status 
+                WHEN 0 THEN '未发放'
+                WHEN 1 THEN '已发放'
+            END as status_name
+        FROM emp_salary s
+        LEFT JOIN emp e ON s.emp_id = e.id
+        WHERE s.emp_id = #{emp_id} AND s.salary_year_month = #{salary_year_month}
+    </select>
+
+    <select id="getTotalSalaryByMonth" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(actual_salary), 0) FROM emp_salary
+        WHERE salary_year_month = #{month}
+    </select>
+    
+    <select id="getAvgSalary" resultType="java.math.BigDecimal">
+        SELECT COALESCE(AVG(actual_salary), 0) FROM emp_salary
+    </select>
+    
+    <select id="getSalaryCountByStatus" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM emp_salary
+        WHERE status = #{status}
+    </select>
+
+    <select id="getEmpIdByUserId" resultType="java.lang.Long">
+        SELECT id FROM emp WHERE user_id = #{userId}
+    </select>
+
+    <select id="getTotalSalaryByEmpIdAndMonth" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(actual_salary), 0) FROM emp_salary
+        WHERE emp_id = #{emp_id} AND salary_year_month = #{month}
+    </select>
+
+    <select id="getAvgSalaryByEmpId" resultType="java.math.BigDecimal">
+        SELECT COALESCE(AVG(actual_salary), 0) FROM emp_salary
+        WHERE emp_id = #{emp_id}
+    </select>
+
+    <select id="getPendingSalaryCountByEmpId" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM emp_salary
+        WHERE emp_id = #{emp_id} AND status = 0
+    </select>
+
+    <select id="getPaidSalaryCountByEmpId" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM emp_salary
+        WHERE emp_id = #{emp_id} AND status = 1
+    </select>
+</mapper> 

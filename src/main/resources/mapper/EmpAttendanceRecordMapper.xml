@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cqie.edu.ems.mapper.EmpAttendanceRecordMapper">
+
+    <!-- 通用查询结果列-->
+    <sql id="Base_Column_List">
+        ear.id,ear.user_id,ear.attendance_date,ear.check_in_time,ear.check_out_time,ear.state,ear.department_id,ear.create_time,ear.update_time
+    </sql>
+
+    <!--查询员工考勤记录-->
+    <select id="list" parameterType="cqie.edu.ems.domain.qo.EmpAttendanceRecordQo" resultType="cqie.edu.ems.domain.entity.EmpAttendanceRecord">
+        select
+        ear.id,
+        ear.user_id,
+        ear.attendance_date,
+        ear.check_in_time,
+        ear.check_out_time,
+        ear.state,
+        ear.department_id,
+        ear.create_time,
+        ear.update_time,
+        COALESCE(e.name, su.name) as userName,
+        sd.name as departmentName
+        from emp_attendance_record ear
+        left join sys_user su on ear.user_id = su.id
+        left join emp e on su.id = e.user_id
+        left join sys_dept sd on ear.department_id = sd.id
+        <where>
+            <if test="userId!=null">
+                and ear.user_id = #{userId}
+            </if>
+            <if test="empName!=null and empName!=''">
+                and (e.name like CONCAT('%', #{empName}, '%') or su.name like CONCAT('%', #{empName}, '%'))
+            </if>
+            <if test="attendanceDateStart!=null">
+                and ear.attendance_date &gt;= #{attendanceDateStart}
+            </if>
+            <if test="attendanceDateEnd!=null">
+                and ear.attendance_date &lt;= #{attendanceDateEnd}
+            </if>
+            <if test="state!=null">
+                and ear.state = #{state}
+            </if>
+            <if test="departmentId!=null">
+                and ear.department_id = #{departmentId}
+            </if>
+        </where>
+        order by ear.attendance_date desc, ear.create_time desc
+    </select>
+
+    <!--新增员工考勤记录-->
+    <insert id="insert" parameterType="cqie.edu.ems.domain.entity.EmpAttendanceRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into emp_attendance_record(
+        user_id,attendance_date,check_in_time,check_out_time,state,department_id
+        )
+        values (
+        #{userId},#{attendanceDate},#{checkInTime},#{checkOutTime},#{state},#{departmentId}
+        )
+    </insert>
+
+    <!--修改员工考勤记录-->
+    <update id="update" parameterType="cqie.edu.ems.domain.entity.EmpAttendanceRecord">
+        update emp_attendance_record
+        <set>
+            <if test="checkInTime!=null">
+                check_in_time = #{checkInTime},
+            </if>
+            <if test="checkOutTime!=null">
+                check_out_time = #{checkOutTime},
+            </if>
+            <if test="state!=null">
+                state = #{state},
+            </if>
+            <if test="departmentId!=null">
+                department_id = #{departmentId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--根据主键删除员工考勤记录-->
+    <delete id="deleteById" parameterType="Long">
+        delete from emp_attendance_record where id = #{id}
+    </delete>
+
+    <!--根据主键获取员工考勤记录-->
+    <select id="getById" parameterType="Long" resultType="cqie.edu.ems.domain.entity.EmpAttendanceRecord">
+        select
+        ear.id,
+        ear.user_id,
+        ear.attendance_date,
+        ear.check_in_time,
+        ear.check_out_time,
+        ear.state,
+        ear.department_id,
+        ear.create_time,
+        ear.update_time,
+        COALESCE(e.name, su.name) as userName,
+        sd.name as departmentName
+        from emp_attendance_record ear
+        left join sys_user su on ear.user_id = su.id
+        left join emp e on su.id = e.user_id
+        left join sys_dept sd on ear.department_id = sd.id
+        where ear.id = #{id}
+    </select>
+
+    <!-- 根据用户ID和考勤日期查询考勤记录 -->
+    <select id="getByUserIdAndDate" parameterType="map" resultType="cqie.edu.ems.domain.entity.EmpAttendanceRecord">
+        SELECT
+        id,user_id,attendance_date,check_in_time,check_out_time,state,department_id,create_time,update_time
+        FROM emp_attendance_record
+        WHERE user_id = #{userId}
+        AND attendance_date = #{attendanceDate}
+    </select>
+
+    <!-- 获取今日考勤总数 -->
+    <select id="countTodayAttendance" parameterType="java.time.LocalDate" resultType="int">
+        SELECT COUNT(*) FROM emp_attendance_record WHERE attendance_date = #{today}
+    </select>
+
+    <!-- 根据状态统计考勤记录数量 -->
+    <select id="countByState" parameterType="java.lang.Integer" resultType="int">
+        SELECT COUNT(*) FROM emp_attendance_record WHERE state = #{state}
+    </select>
+
+    <!-- 获取考勤趋势统计 -->
+    <select id="getAttendanceTrend" parameterType="java.lang.Integer" resultType="java.util.Map">
+        SELECT 
+            DATE(attendance_date) as date,
+            COUNT(*) as totalCount,
+            SUM(CASE WHEN state = 0 THEN 1 ELSE 0 END) as normalCount,
+            SUM(CASE WHEN state = 1 THEN 1 ELSE 0 END) as lateCount,
+            SUM(CASE WHEN state = 2 THEN 1 ELSE 0 END) as earlyCount,
+            SUM(CASE WHEN state = 3 THEN 1 ELSE 0 END) as bothCount
+        FROM emp_attendance_record 
+        WHERE attendance_date >= DATE_SUB(CURDATE(), INTERVAL #{days} DAY)
+        GROUP BY DATE(attendance_date)
+        ORDER BY date ASC
+    </select>
+</mapper> 
