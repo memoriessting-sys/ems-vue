@@ -21,7 +21,7 @@
     <el-table :data="list" border stripe @selection-change="s => selected = s" class="data-table" :header-cell-style="{background:'#f5f7fa',color:'#606266'}">
       <el-table-column type="selection" width="50" align="center" />
       <el-table-column prop="id" label="ID" width="70" align="center" />
-      <el-table-column prop="user_name" label="员工" width="100" />
+      <el-table-column prop="emp_name" label="员工" width="100" />
       <el-table-column prop="salary_year_month" label="月份" width="80" align="center" />
       <el-table-column prop="base_salary" label="基本工资" width="100" align="right">
         <template #default="{ row }"><span class="money-text">{{ row.base_salary?.toLocaleString() }}</span></template>
