@@ -18,7 +18,7 @@
         </el-select>
         <el-button type="primary" @click="load" class="search-btn"><el-icon><Search /></el-icon>查询</el-button>
       </div>
-      <el-button type="success" @click="openDialog()" class="add-btn"><el-icon><Plus /></el-icon>申请请假</el-button>
+      <el-button type="success" @click="openDialog()" v-permission="'leave:add'" class="add-btn"><el-icon><Plus /></el-icon>申请请假</el-button>
     </div>
     <el-table :data="list" border stripe class="data-table" :header-cell-style="{background:'#f5f7fa',color:'#606266'}">
       <el-table-column prop="id" label="ID" width="70" align="center" />
@@ -41,9 +41,9 @@
       </el-table-column>
       <el-table-column label="操作" width="220" fixed="right" align="center">
         <template #default="{ row }">
-          <el-button v-if="row.status === 1" link type="success" @click="handleApprove(row.id, 2)" class="op-btn"><el-icon><Check /></el-icon>批准</el-button>
-          <el-button v-if="row.status === 1" link type="danger" @click="handleApprove(row.id, 3)" class="op-btn"><el-icon><Close /></el-icon>驳回</el-button>
-          <el-button v-if="row.status === 2" link type="warning" @click="handleReturn(row.id)" class="op-btn"><el-icon><RefreshRight /></el-icon>销假</el-button>
+          <el-button v-if="row.status === 1" link type="success" @click="handleApprove(row.id, 2)" v-permission="'leave:approve'" class="op-btn"><el-icon><Check /></el-icon>批准</el-button>
+          <el-button v-if="row.status === 1" link type="danger" @click="handleApprove(row.id, 3)" v-permission="'leave:approve'" class="op-btn"><el-icon><Close /></el-icon>驳回</el-button>
+          <el-button v-if="row.status === 2" link type="warning" @click="handleReturn(row.id)" v-permission="'leave:return'" class="op-btn"><el-icon><RefreshRight /></el-icon>销假</el-button>
           <el-popconfirm title="确认删除?" @confirm="handleDelete(row.id)">
             <template #reference><el-button link type="danger" class="op-btn"><el-icon><Delete /></el-icon>删除</el-button></template>
           </el-popconfirm>

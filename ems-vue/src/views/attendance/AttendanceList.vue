@@ -14,8 +14,8 @@
         <el-button type="primary" @click="load" class="search-btn"><el-icon><Search /></el-icon>查询</el-button>
       </div>
       <div class="toolbar-right">
-        <el-button type="success" @click="handleCheckIn" class="action-btn"><el-icon><CircleCheck /></el-icon>签到</el-button>
-        <el-button type="warning" @click="handleCheckOut" class="action-btn"><el-icon><CircleClose /></el-icon>签退</el-button>
+        <el-button type="success" @click="handleCheckIn" v-permission="'attendance:edit'" class="action-btn"><el-icon><CircleCheck /></el-icon>签到</el-button>
+        <el-button type="warning" @click="handleCheckOut" v-permission="'attendance:edit'" class="action-btn"><el-icon><CircleClose /></el-icon>签退</el-button>
       </div>
     </div>
     <el-table :data="list" border stripe class="data-table" :header-cell-style="{background:'#f5f7fa',color:'#606266'}">

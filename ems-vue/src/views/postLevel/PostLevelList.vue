@@ -10,7 +10,7 @@
         </el-input>
         <el-button type="primary" @click="load" class="search-btn"><el-icon><Search /></el-icon>查询</el-button>
       </div>
-      <el-button type="success" @click="openDialog()" class="add-btn"><el-icon><Plus /></el-icon>新增岗位等级</el-button>
+      <el-button type="success" @click="openDialog()" v-permission="'postLevel:add'" class="add-btn"><el-icon><Plus /></el-icon>新增岗位等级</el-button>
     </div>
     <el-table :data="list" border stripe class="data-table" :header-cell-style="{background:'#f5f7fa',color:'#606266'}">
       <el-table-column prop="id" label="ID" width="70" align="center" />
@@ -23,9 +23,9 @@
       </el-table-column>
       <el-table-column label="操作" width="150" align="center">
         <template #default="{ row }">
-          <el-button link type="primary" @click="openDialog(row)" class="op-btn"><el-icon><Edit /></el-icon>编辑</el-button>
+          <el-button link type="primary" @click="openDialog(row)" v-permission="'postLevel:edit'" class="op-btn"><el-icon><Edit /></el-icon>编辑</el-button>
           <el-popconfirm title="确认删除?" @confirm="handleDelete(row.id)">
-            <template #reference><el-button link type="danger" class="op-btn"><el-icon><Delete /></el-icon>删除</el-button></template>
+            <template #reference><el-button link type="danger" v-permission="'postLevel:delete'" class="op-btn"><el-icon><Delete /></el-icon>删除</el-button></template>
           </el-popconfirm>
         </template>
       </el-table-column>
