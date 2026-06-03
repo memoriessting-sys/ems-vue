@@ -22,6 +22,9 @@ ems-vue/node_modules/
 ems-vue/dist/
 ems-vue/.vite/
 
+# Claude
+CLAUDE.md
+
 # Maven
 *.jar
 *.war
